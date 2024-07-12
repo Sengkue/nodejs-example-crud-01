@@ -89,7 +89,11 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
+```
+## Code
+
 ## config/db.js
+```javascript
 const Sequelize = require("sequelize");
 require("dotenv").config();
 const sequelize = new Sequelize(
@@ -117,8 +121,10 @@ sequelize.sync().then(() => {
 });
 
 module.exports = sequelize;
-
+```
+## Code
 ## controllers/category.controller.js
+```javascript
 const Category = require("../models/category.model");
 
 exports.create = (req, res) => {
@@ -179,7 +185,10 @@ exports.delete = (req, res) => {
       return res.status(500).json({ result: error });
     });
 };
+```
+## Code
 ## router/router.js
+```javascript
 const route = require('express').Router();
 const category = require('./category.routes');
 const product = require('./product.routes');
@@ -202,9 +211,9 @@ route.put('/:id', controller.update);
 route.delete('/:id', controller.delete);
 
 module.exports = route;
+```
 
-
-## Authors
+### Authors
 
 - **Your Name** - *Initial work* - [YourGitHub](https://github.com/your-username)
 
