@@ -90,7 +90,6 @@ app.listen(port, () => {
 });
 
 ```
-## Code
 
 ## config/db.js
 ```javascript
@@ -122,7 +121,7 @@ sequelize.sync().then(() => {
 
 module.exports = sequelize;
 ```
-## Code
+
 ## controllers/category.controller.js
 ```javascript
 const Category = require("../models/category.model");
@@ -186,7 +185,7 @@ exports.delete = (req, res) => {
     });
 };
 ```
-## Code
+
 ## router/router.js
 ```javascript
 const route = require('express').Router();
