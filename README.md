@@ -57,15 +57,152 @@ These instructions will help you set up the project on your local machine.
 - `router/router.js`: Main router file.
 - `router/category.routes.js`: Category routes.
 
-### Endpoints
+## Code
 
-- `GET /`: Welcome message.
-- `POST /api`: Sample POST endpoint.
-- `POST /category`: Create a new category.
-- `GET /category`: Get all categories.
-- `GET /category/:id`: Get a category by ID.
-- `PUT /category/:id`: Update a category by ID.
-- `DELETE /category/:id`: Delete a category by ID.
+### server.js
+```javascript
+const express = require("express");
+const app = express();
+const cors = require("cors");
+const bodyParser = require("body-parser");
+require("dotenv").config();
+require("./config/db");
+const routes = require("./router/router");
+
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(routes);
+
+app.get("/", (req, res) => {
+  return res.json("welcome to node api");
+});
+
+app.post("/api", (req, res) => {
+  console.log(req.body);
+  res.send("Hello world!");
+});
+
+const port_A = 8000;
+const port = process.env.PORT || port_A;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+
+## config/db.js
+const Sequelize = require("sequelize");
+require("dotenv").config();
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.USER,
+  process.env.PASSWORD,
+  {
+    dialect: "mysql",
+    host: process.env.HOST,
+    dialectOptions: {},
+  }
+);
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Connection has been established successfully.");
+  })
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
+  });
+
+sequelize.sync().then(() => {
+  console.log("Database & tables created!");
+});
+
+module.exports = sequelize;
+
+## controllers/category.controller.js
+const Category = require("../models/category.model");
+
+exports.create = (req, res) => {
+  const category = {
+    category: req.body.category,
+  };
+  Category.create(category)
+    .then((data) => {
+      return res.status(200).json({ result: data });
+    })
+    .catch((error) => {
+      return res.status(200).json({ result: error });
+    });
+};
+
+exports.findAll = (req, res) => {
+  Category.findAndCountAll()
+    .then((data) => {
+      return res.status(200).json({ result: data });
+    })
+    .catch((error) => {
+      return res.status(500).json({ result: error });
+    });
+};
+
+exports.findOne = (req, res) => {
+  const id = req.params.id;
+  Category.findOne({ where: { id: id } })
+    .then((data) => {
+      return res.status(200).json({ result: data });
+    })
+    .catch((error) => {
+      return res.status(500).json({ result: error });
+    });
+};
+
+exports.update = (req, res) => {
+  const id = req.params.id;
+  const category = {
+    category: req.body.category,
+  };
+  Category.update(category, { where: { id: id } })
+    .then((data) => {
+      return res.status(200).json({ result: data });
+    })
+    .catch((error) => {
+      return res.status(200).json({ result: error });
+    });
+};
+
+exports.delete = (req, res) => {
+  const id = req.params.id;
+  Category.destroy({ where: { id: id } })
+    .then((data) => {
+      return res.status(200).json({ result: data });
+    })
+    .catch((error) => {
+      return res.status(500).json({ result: error });
+    });
+};
+## router/router.js
+const route = require('express').Router();
+const category = require('./category.routes');
+const product = require('./product.routes');
+const user = require('./user.routes');
+
+route.use('/category', category);
+route.use('/product', product);
+route.use('/user', user);
+
+module.exports = route;
+
+##router/category.routes.js
+const controller = require('../controllers/category.controller');
+const route = require('express').Router();
+
+route.post('/', controller.create);
+route.get('/', controller.findAll);
+route.get('/:id', controller.findOne);
+route.put('/:id', controller.update);
+route.delete('/:id', controller.delete);
+
+module.exports = route;
+
 
 ## Authors
 
